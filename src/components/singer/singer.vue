@@ -1,6 +1,7 @@
 <template>
   <div class="singer">
-  	
+  	<list-view @select="selectSinger" :data="singers"></list-view>
+  	<router-view></router-view>
   </div>
 </template>
 
@@ -8,25 +9,32 @@
   import { getSingerList } from 'api/singer'
   import { ERR_OK } from 'api/config'
   import Singer from 'common/js/singer'
+  import ListView from 'base/listview/listview'
+  import { mapMutations } from 'vuex'
 
-  const HOT_NAME = "热门歌手"
+  const HOT_NAME = "热门"
   const HOT_SINGER_LEN = 10
 
   export default {
   	data() {
   		return {
-  			singerList: []
+  			singers: []
   		}
   	},
   	created() {
   		this._getSingerList();
   	},
   	methods: {
+  		selectSinger(singer) {
+  			this.$router.push({
+  				path: '/singer/' + singer.id
+  			})
+  			this.setSinger(singer)
+  		},
   		_getSingerList() {
   			getSingerList().then((res) => {
   				if (res.code === ERR_OK) {
-  					this.singerList = res.data.list;
-  					// console.log(this._normalizeSinger(res.data.list))
+  					this.singers = this._normalizeSinger(res.data.list);
   				}
   			})
   		},
@@ -63,7 +71,7 @@
   				let val = map[key];
   				if (val.title.match(/[a-zA-Z]/)) {
   					ret.push(val)
-  				} else if (val === HOT_NAME) {
+  				} else if (val.title === HOT_NAME) {
   					hot.push(val)
   				}
   			}
@@ -71,7 +79,13 @@
   				return a.title.charCodeAt(0) - b.title.charCodeAt(0)
   			})
   			return hot.concat(ret)
-  		}
+  		},
+  		...mapMutations({
+  			setSinger: 'SET_SINGER'
+  		})
+  	},
+  	components: {
+  		ListView
   	}
   }
 </script>
