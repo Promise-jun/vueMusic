@@ -1,6 +1,10 @@
 // import {getLyric} from 'api/song'
-// import {ERR_OK} from 'api/config'
+import {ERR_OK} from 'api/config'
 // import {Base64} from 'js-base64'
+
+import jsonp from 'common/js/jsonp'
+var commonParams, options
+// import {commonParams, options} from './config'
 
 export default class Song {
   constructor({id, mid, singer, name, album, duration, image, url}) {
@@ -41,9 +45,9 @@ export function createSong(musicData) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    // url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
-    url: `http://dl.stream.qqmusic.qq.com/C100${musicData.songid}.m4a?fromtag=66`
-  })
+    url: ''
+    // url: `http://ws.stream.qqmusic.qq.com/${musicData.songmid}.m4a?fromtag=46`
+  })  
 }
 
 function filterSinger(singer) {
@@ -57,3 +61,27 @@ function filterSinger(singer) {
   return ret.join('/')
 }
 
+
+export function getSongUrl(songmid) {
+  const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
+
+  const data = Object.assign({}, commonParams, {
+    g_tk: 5381,
+    format: 'json',
+    outCharset: 'utf-8',
+    notice: 0,
+    loginUin: 0,
+    hostUin: 0,
+    inCharset: 'utf8',
+    platform: 'yqq',
+    needNewCode: 0,
+    cid: 205361747,
+    uin: 0,
+    songmid: songmid,
+    filename: 'C400'+songmid+'.m4a',
+    guid: 6935341414,
+    jsonpCallback: 'MusicJsonCallback016674538646550108',
+  })
+
+  return jsonp(url, data, options)
+}
