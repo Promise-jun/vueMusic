@@ -44,10 +44,9 @@ export function createSong(musicData) {
     name: musicData.songname,
     album: musicData.albumname,
     duration: musicData.interval,
-    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: ''
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`
     // url: `http://ws.stream.qqmusic.qq.com/${musicData.songmid}.m4a?fromtag=46`
-  })  
+  }) 
 }
 
 function filterSinger(singer) {
