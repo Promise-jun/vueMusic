@@ -108,9 +108,13 @@
         } else {
           this.insertSong(item)
         }
+        this.$emit('select')
       },
       listScroll() {
         this.$emit('listScroll')
+      },
+      refresh() {
+        this.$refs.suggest.refresh()
       },
       _checkMore(data) {
         const song = data.song
