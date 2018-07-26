@@ -4,7 +4,7 @@ import { loadSearch } from 'common/js/cache'
 const state = {
 	singer: {},
 	playing: false,
-	fullScreen: false,
+	fullScreen: false, //播放器是否全屏
 	playList: [],
 	sequenceList: [],
 	mode: playMode.sequence,
