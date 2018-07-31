@@ -2,12 +2,16 @@
   <scroll ref="suggest" 
           class="suggest" 
           :data="result" 
+          :pullDown="pullDown" 
           :pullup="pullup" 
+          @pullDownScroll="pullDownScroll" 
+          @pullDownTouchEnd="pullDownTouchEnd" 
           @scrollToEnd="searchMore" 
           :beforeScroll="beforeScroll" 
-          @beforeScroll="listScroll"
+          @beforeScroll="listScroll" 
   >
     <ul class="suggest-list">
+      <div class="pull-down">{{ pullDownText }}</div>
       <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
@@ -21,6 +25,12 @@
     <div v-show="!hasMore && !result.length" class="no-result-wrapper">
       <no-result title="抱歉，没有搜索结果"></no-result>
     </div>
+    <top-tip ref="topTip">
+      <div class="tip-title">
+        <i class="icon-ok"></i>
+        <span class="text">刷新成功</span>
+      </div>
+    </top-tip>
   </scroll>
 </template>
 
@@ -33,6 +43,7 @@
   import Singer from 'common/js/singer'
   import { mapMutations, mapActions } from 'vuex'
   import NoResult from 'base/no-result/no-result'
+  import TopTip from 'base/top-tip/top-tip'
 
   const TYPE_SINGER = 'singer'
   const perpage = 20
@@ -52,7 +63,9 @@
       return {
         page: 1,
         result: [],
+        pullDown: true,
         pullup: true,
+        pullDownText: '下拉刷新',
         beforeScroll: true,
         hasMore: true
       }
@@ -66,6 +79,21 @@
           if (res.code === ERR_OK) {
             this.result = this._genResult(res.data)
             this._checkMore(res.data)
+          }
+        })
+      },
+      pullDownScroll() {
+        this.pullDownText = '释放立即刷新'
+      },
+      pullDownTouchEnd() {
+        this.page = 1
+        this.hasMore = true
+        search(this.query, this.page, this.showSinger, perpage).then((res) => {
+          if (res.code === ERR_OK) {
+            this.result = this._genResult(res.data)
+            this._checkMore(res.data)
+            this.pullDownText = '下拉刷新'
+            this.$refs.topTip.show()
           }
         })
       },
@@ -165,7 +193,8 @@
     components: {
       Scroll,
       Loading,
-      NoResult
+      NoResult,
+      TopTip
     }
   }
 </script>
@@ -179,6 +208,15 @@
     overflow: hidden
     .suggest-list
       padding: 0 30px
+      .pull-down
+        width: 100%
+        text-align: center
+        position: absolute
+        top: -38px
+        left: 0
+        font-size: 14px
+        color: $color-text-d
+        padding: 12px 0
       .suggest-item
         display: flex
         align-items: center
@@ -201,4 +239,15 @@
       width: 100%
       top: 50%
       transform: translateY(-50%)
+    .tip-title
+      text-align: center
+      padding: 18px 0
+      font-size: 0
+      .icon-ok
+        font-size: $font-size-medium
+        color: $color-theme
+        margin-right: 4px
+      .text
+        font-size: $font-size-medium
+        color: $color-text
 </style>

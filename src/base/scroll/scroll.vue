@@ -25,6 +25,10 @@
 				type: Boolean,
 				default: false
 			},
+			pullDown: {
+				type: Boolean,
+				default: false
+			},
 			pullup: {
 				type: Boolean,
 				default: false
@@ -57,6 +61,19 @@
 					let me = this;
 					this.scroll.on('scroll', (pos) => {
 						me.$emit('scroll', pos);
+					})
+				}
+
+				if (this.pullDown) {
+					this.scroll.on('scroll', () => {
+						if (this.scroll.y > 40) {
+							this.$emit('pullDownScroll')
+						}
+					})
+					this.scroll.on('touchend', () => {
+						if (this.scroll.y > 40) {
+							this.$emit('pullDownTouchEnd')
+						}
 					})
 				}
 
